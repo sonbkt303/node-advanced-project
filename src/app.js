@@ -3,6 +3,10 @@ import express from "express";
 import { graphqlHTTP } from "express-graphql";
 import { buildSchema } from "graphql";
 dotenv.config();
+// const expressPlayground = require('graphql-playground-middleware-express')
+  // .default
+import expressPlayground from 'graphql-playground-middleware-express';
+
 const app = express();
 
 
@@ -35,6 +39,8 @@ app.use(
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
+
+app.get('/playground', expressPlayground.default({ endpoint: '/graphql' }))
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
