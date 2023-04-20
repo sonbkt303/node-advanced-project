@@ -12,8 +12,8 @@
         "useBuiltIns": "usage", // @babel/polyfill:
         "corejs": "3.6.5"
       }
-    ],
-  ],
-  "compact": true,
-  "plugins": ["@babel/plugin-transform-runtime","@babel/plugin-proposal-export-default-from"]
+    ]
+  ]
+  // "compact": true
+  // "plugins": ["@babel/plugin-transform-runtime","@babel/plugin-proposal-export-default-from"]
 }
