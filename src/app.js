@@ -1,10 +1,10 @@
-
+;
 import express from "express";
-const app = express();
 import dotenv from "dotenv";
+const app = express();
 import { graphqlHTTP } from "express-graphql";
 import { buildSchema } from "graphql";
-dotenv.config();
+require("dotenv").config();
 
 // console.log("process.env.PORT", process.env.PORT)
 
