@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
-import express from "express";
-import { graphqlHTTP } from "express-graphql";
-import { buildSchema } from "graphql";
+// import express from "express";
+// import { graphqlHTTP } from "express-graphql";
+// import { buildSchema } from "graphql";
 dotenv.config();
 import { ApolloServer } from '@apollo/server';
 import { startStandaloneServer } from '@apollo/server/standalone';
@@ -15,7 +15,7 @@ const PORT_GRAPHQL = process.env.PORT_GRAPHQL || 4000;
 // import expressPlayground from "graphql-playground-middleware-express";
 // import { makeExecutableSchema } from "graphql-tools";
 
-const app = express();
+// const app = express();
 
 const books = [
   {
@@ -51,19 +51,27 @@ const resolvers = {
   },
 };
 
+
 const server = new ApolloServer({
   typeDefs,
   resolvers,
 });
 
 const { url } = await startStandaloneServer(server, {
+  context: async ({ req }) => {
+    console.log('req', req.headers.token);
+    return { token: req.headers.token }
+  },
   listen: { port: PORT_GRAPHQL },
 });
 
-app.get("/", (req, res) => {
-  res.send("Hello World!");
-});
+console.log(`🚀  Server ready at ${url}`);
 
-app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}`);
-});
+
+// app.get("/", (req, res) => {
+//   res.send("Hello World!");
+// });
+
+// app.listen(PORT, () => {
+//   console.log(`Example app listening on port ${PORT}`);
+// });
