@@ -3,46 +3,67 @@ import express from "express";
 import { graphqlHTTP } from "express-graphql";
 import { buildSchema } from "graphql";
 dotenv.config();
+import { ApolloServer } from '@apollo/server';
+import { startStandaloneServer } from '@apollo/server/standalone';
+
 // const expressPlayground = require('graphql-playground-middleware-express')
-  // .default
-import expressPlayground from 'graphql-playground-middleware-express';
+// .default
+
+const PORT = process.env.PORT || 3000;
+const PORT_GRAPHQL = process.env.PORT_GRAPHQL || 4000;
+
+// import expressPlayground from "graphql-playground-middleware-express";
+// import { makeExecutableSchema } from "graphql-tools";
 
 const app = express();
 
+const books = [
+  {
+    title: 'The Awakening',
+    author: 'Kate Chopin',
+  },
+  {
+    title: 'City of Glass',
+    author: 'Paul Auster',
+  },
+];
 
-console.log("process.env.PORT", process.env.PORT)
+const typeDefs = `#graphql
+  # Comments in GraphQL strings (such as this one) start with the hash (#) symbol.
 
-const port = process.env.PORT || 3000;
-
-let schema = buildSchema(`
-  type Query {
-    hello: String
+  # This "Book" type defines the queryable fields for every book in our data source.
+  type Book {
+    title: String
+    author: String
   }
-`);
 
-// The root provides a resolver function for each API endpoint
-let root = {
-  hello: () => {
-    return "Hello world!";
+  # The "Query" type is special: it lists all of the available queries that
+  # clients can execute, along with the return type for each. In this
+  # case, the "books" query returns an array of zero or more Books (defined above).
+  type Query {
+    books: [Book]
+  }
+`;
+
+const resolvers = {
+  Query: {
+    books: () => books,
   },
 };
 
-app.use(
-  "/graphql",
-  graphqlHTTP({
-    schema: schema,
-    rootValue: root,
-    graphiql: true,
-  })
-);
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+});
+
+const { url } = await startStandaloneServer(server, {
+  listen: { port: PORT_GRAPHQL },
+});
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
-app.get('/playground', expressPlayground.default({ endpoint: '/graphql' }))
-
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
+app.listen(PORT, () => {
+  console.log(`Example app listening on port ${PORT}`);
 });
-
