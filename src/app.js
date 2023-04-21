@@ -11,7 +11,7 @@ import bodyParser from 'body-parser';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import { expressMiddleware } from '@apollo/server/express4';
 // import { ApolloServerPluginUsageReporting } from '@apollo/server/plugin/usageReporting';
-import { resolvers, typeDefs } from "./schema.js";
+import { resolvers, typeDefs } from "./schema/schema.js";
 
 
 // const expressPlayground = require('graphql-playground-middleware-express')
