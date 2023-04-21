@@ -10,9 +10,29 @@ const books = [
 ];
 
 export const typeDefs = `#graphql
+    interface MutationResponse {
+      code: String!
+      success: Boolean!
+      message: String
+    }
+
+    type UpdateUserEmailMutationResponse implements MutationResponse {
+      code: String!
+      success: Boolean!
+      message: String
+      user: User
+    }
+
     # Comments in GraphQL strings (such as this one) start with the hash (#) symbol.
   
     # This "Book" type defines the queryable fields for every book in our data source.
+
+    type User {
+      id: ID!
+      name: String!
+      email: String!
+    }
+
     type Book {
       title: String
       author: String
@@ -50,7 +70,7 @@ export const typeDefs = `#graphql
     type Query {
       books: [Book]
       author: [Author]
-      avatar(borderColor: AllowedColor): String # enum argument
+      avatar(borderColor: AllowedColor): UpdateUserEmailMutationResponse # enum argument
     }
 
     type Mutation {
@@ -70,9 +90,12 @@ export const resolvers = {
     avatar: (parent, args) => {
 
       console.log("args", args);
-      console.log("parent", parent);
 
-      return '123123';
+      return {
+        code: 2,
+        success: true,
+        message: "12312312"
+      };
       // args.borderColor is '#f00', '#0f0', or '#00f'
     },
   },
