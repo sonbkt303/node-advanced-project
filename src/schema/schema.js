@@ -1,22 +1,22 @@
-import { GraphQLScalarType, Kind, GraphQLError } from 'graphql';
-import GraphQLJSON from 'graphql-type-json';
-import { mapSchema, getDirective, MapperKind } from '@graphql-tools/utils';
-
+import { GraphQLScalarType, Kind, GraphQLError } from "graphql";
+import GraphQLJSON from "graphql-type-json";
+import { mapSchema, getDirective, MapperKind } from "@graphql-tools/utils";
+import { makeExecutableSchema } from "@graphql-tools/schema";
 
 const dateScalar = new GraphQLScalarType({
-  name: 'Date',
-  description: 'Date custom scalar type',
+  name: "Date",
+  description: "Date custom scalar type",
   serialize(value) {
     if (value instanceof Date) {
       return value.getTime(); // Convert outgoing Date to integer for JSON
     }
-    throw Error('GraphQL Date Scalar serializer expected a `Date` object');
+    throw Error("GraphQL Date Scalar serializer expected a `Date` object");
   },
   parseValue(value) {
-    if (typeof value === 'number') {
+    if (typeof value === "number") {
       return new Date(value); // Convert incoming integer to Date
     }
-    throw new Error('GraphQL Date Scalar parser expected a `number`');
+    throw new Error("GraphQL Date Scalar parser expected a `number`");
   },
   parseLiteral(ast) {
     if (ast.kind === Kind.INT) {
@@ -30,12 +30,12 @@ const dateScalar = new GraphQLScalarType({
 
 // Validation function for checking "oddness"
 const oddValue = (value) => {
-  console.log('value', value);
-  if (typeof value === 'number' && Number.isInteger(value) && value % 2 !== 0) {
+  console.log("value", value);
+  if (typeof value === "number" && Number.isInteger(value) && value % 2 !== 0) {
     return value;
   }
-  throw new GraphQLError('Provided value is not an odd integer', {
-    extensions: { code: 'BAD_USER_INPUT' },
+  throw new GraphQLError("Provided value is not an odd integer", {
+    extensions: { code: "BAD_USER_INPUT" },
   });
 };
 
@@ -47,7 +47,11 @@ export const upperDirectiveTransformer = (schema, directiveName) => {
     // Executes once for each object field in the schema
     [MapperKind.OBJECT_FIELD]: (fieldConfig) => {
       // Check whether this field has the specified directive
-      const upperDirective = getDirective(schema, fieldConfig, directiveName)?.[0];
+      const upperDirective = getDirective(
+        schema,
+        fieldConfig,
+        directiveName
+      )?.[0];
 
       if (upperDirective) {
         // Get this field's original resolver
@@ -57,7 +61,7 @@ export const upperDirectiveTransformer = (schema, directiveName) => {
         // the original resolver, then converts its result to upper case
         fieldConfig.resolve = async function (source, args, context, info) {
           const result = await resolve(source, args, context, info);
-          if (typeof result === 'string') {
+          if (typeof result === "string") {
             return result.toUpperCase();
           }
           return result;
@@ -66,7 +70,7 @@ export const upperDirectiveTransformer = (schema, directiveName) => {
       }
     },
   });
-}
+};
 
 const books = [
   {
@@ -171,47 +175,48 @@ export const typeDefs = `#graphql
     }
   `;
 
-export const resolvers = {
-  AllowedColor: {
-    RED: '#f00',
-    GREEN: '#0f0',
-    BLUE: '#00f',
-  },
-  Odd: new GraphQLScalarType({
-    name: 'Odd',
-    description: 'Odd custom scalar type',
-    parseValue: oddValue,
-    serialize: oddValue,
-    parseLiteral(ast) {
-      if (ast.kind === Kind.INT) {
-        return oddValue(parseInt(ast.value, 10));
-      }
-      throw new GraphQLError('Provided value is not an odd integer', {
-        extensions: { code: 'BAD_USER_INPUT' },
-      });
-    },
-  }),
-  Date: dateScalar,
+// export const resolvers = {
+//   AllowedColor: {
+//     RED: "#f00",
+//     GREEN: "#0f0",
+//     BLUE: "#00f",
+//   },
+//   Odd: new GraphQLScalarType({
+//     name: "Odd",
+//     description: "Odd custom scalar type",
+//     parseValue: oddValue,
+//     serialize: oddValue,
+//     parseLiteral(ast) {
+//       if (ast.kind === Kind.INT) {
+//         return oddValue(parseInt(ast.value, 10));
+//       }
+//       throw new GraphQLError("Provided value is not an odd integer", {
+//         extensions: { code: "BAD_USER_INPUT" },
+//       });
+//     },
+//   }),
+//   Date: dateScalar,
+
+//   Query: {
+//     books: () => books,
+//     avatar: (parent, args) => {
+//       console.log("args", args);
+
+//       return {
+//         code: 2,
+//         success: true,
+//         message: "12312312",
+//       };
+//       // args.borderColor is '#f00', '#0f0', or '#00f'
+//     },
+//     echoOdd(_, { odd }) {
+//       return odd;
+//     },
+//     hello() {
+//       return "Hello World!";
+//     },
+//   },
+// };
 
 
-  Query: {
-    books: () => books,
-    avatar: (parent, args) => {
 
-      console.log("args", args);
-
-      return {
-        code: 2,
-        success: true,
-        message: "12312312"
-      };
-      // args.borderColor is '#f00', '#0f0', or '#00f'
-    },
-    echoOdd(_, { odd }) {
-      return odd;
-    },
-    hello() {
-      return 'Hello World!';
-    },
-  },
-};

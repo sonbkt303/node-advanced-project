@@ -4,29 +4,23 @@ import express from "express";
 // import { buildSchema } from "graphql";
 dotenv.config();
 import { ApolloServer } from '@apollo/server';
-import { startStandaloneServer } from '@apollo/server/standalone';
 import http from 'http';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import { expressMiddleware } from '@apollo/server/express4';
 // import { ApolloServerPluginUsageReporting } from '@apollo/server/plugin/usageReporting';
-import { resolvers, typeDefs, upperDirectiveTransformer } from "./schema/schema.js";
-import { makeExecutableSchema } from '@graphql-tools/schema';
-
-
-
+// import { typeDefs, upperDirectiveTransformer } from "./schema/index.js";
+// import { resolvers } from "./schema/resolvers.js";
+// import { typeDefs } from "./schema/typeDefs.js";
+// import { upperDirectiveTransformer } from "./schema/directive.js";
+import schema from "./schema/index.js";
 
 // const expressPlayground = require('graphql-playground-middleware-express')
 // .default
 
 const PORT = process.env.PORT || 3000;
 const PORT_GRAPHQL = process.env.PORT_GRAPHQL || 4000;
-
-// import expressPlayground from "graphql-playground-middleware-express";
-// import { makeExecutableSchema } from "graphql-tools";
-
-// const app = express();
 
 // Required logic for integrating with Express
 const app = express();
@@ -37,14 +31,6 @@ const httpServer = http.createServer(app);
 
 // Same ApolloServer initialization as before, plus the drain plugin
 // for our httpServer.
-
-let schema = makeExecutableSchema({
-  typeDefs,
-  resolvers,
-});
-
-schema = upperDirectiveTransformer(schema, 'upper');
-
 const server = new ApolloServer({
   schema,
   plugins: [
@@ -74,12 +60,3 @@ app.use(
 await new Promise((resolve) => httpServer.listen({ port: PORT_GRAPHQL }, resolve));
 
 console.log(`🚀 Server ready at http://localhost:${PORT_GRAPHQL}/`);
-
-
-// app.get("/", (req, res) => {
-//   res.send("Hello World!");
-// });
-
-// app.listen(PORT, () => {
-//   console.log(`Example app listening on port ${PORT}`);
-// });
