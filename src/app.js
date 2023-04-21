@@ -10,6 +10,8 @@ import cors from 'cors';
 import bodyParser from 'body-parser';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import { expressMiddleware } from '@apollo/server/express4';
+// import { ApolloServerPluginUsageReporting } from '@apollo/server/plugin/usageReporting';
+import { resolvers, typeDefs } from "./schema.js";
 
 
 // const expressPlayground = require('graphql-playground-middleware-express')
@@ -23,40 +25,6 @@ const PORT_GRAPHQL = process.env.PORT_GRAPHQL || 4000;
 
 // const app = express();
 
-const books = [
-  {
-    title: 'The Awakening',
-    author: 'Kate Chopin',
-  },
-  {
-    title: 'City of Glass',
-    author: 'Paul Auster',
-  },
-];
-
-const typeDefs = `#graphql
-  # Comments in GraphQL strings (such as this one) start with the hash (#) symbol.
-
-  # This "Book" type defines the queryable fields for every book in our data source.
-  type Book {
-    title: String
-    author: String
-  }
-
-  # The "Query" type is special: it lists all of the available queries that
-  # clients can execute, along with the return type for each. In this
-  # case, the "books" query returns an array of zero or more Books (defined above).
-  type Query {
-    books: [Book]
-  }
-`;
-
-const resolvers = {
-  Query: {
-    books: () => books,
-  },
-};
-
 // Required logic for integrating with Express
 const app = express();
 // Our httpServer handles incoming requests to our Express app.
@@ -69,7 +37,12 @@ const httpServer = http.createServer(app);
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
+  plugins: [
+    ApolloServerPluginDrainHttpServer({ httpServer }),
+    // ApolloServerPluginUsageReporting({
+    //   fieldLevelInstrumentation: 0.5,
+    // }),
+  ],
 });
 // Ensure we wait for our server to start
 await server.start();
