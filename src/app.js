@@ -57,10 +57,11 @@ const resolvers = {
   },
 };
 
+// Required logic for integrating with Express
 const app = express();
 // Our httpServer handles incoming requests to our Express app.
 // Below, we tell Apollo Server to "drain" this httpServer,
-// enabling our servers to shut down gracefully
+// enabling our servers to shut down gracefully.
 const httpServer = http.createServer(app);
 
 // Same ApolloServer initialization as before, plus the drain plugin
@@ -73,27 +74,11 @@ const server = new ApolloServer({
 // Ensure we wait for our server to start
 await server.start();
 
-// const server = new ApolloServer({
-//   typeDefs,
-//   resolvers,
-// });
-
-// const { url } = await startStandaloneServer(server, {
-//   context: async ({ req }) => {
-//     console.log('req', req.headers.token);
-//     return { token: req.headers.token }
-//   },
-//   listen: { port: PORT_GRAPHQL },
-// });
-
-
-
 // Set up our Express middleware to handle CORS, body parsing,
 // and our expressMiddleware function.
 app.use(
   '/',
-  cors,
-  // 50mb is the limit that `startStandaloneServer` uses, but you may configure this to suit your needs
+  cors(),
   bodyParser.json({ limit: '50mb' }),
   // expressMiddleware accepts the same arguments:
   // an Apollo Server instance and optional configuration options
@@ -103,10 +88,9 @@ app.use(
 );
 
 // Modified server startup
-await new Promise((resolve) => {
-  return httpServer.listen({ port: 4000 }, resolve)
-});
-console.log(`🚀 Server ready at http://localhost:4000/`);
+await new Promise((resolve) => httpServer.listen({ port: PORT_GRAPHQL }, resolve));
+
+console.log(`🚀 Server ready at http://localhost:${PORT_GRAPHQL}/`);
 
 
 // app.get("/", (req, res) => {
