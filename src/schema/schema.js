@@ -1,5 +1,7 @@
 import { GraphQLScalarType, Kind, GraphQLError } from 'graphql';
 import GraphQLJSON from 'graphql-type-json';
+import { mapSchema, getDirective, MapperKind } from '@graphql-tools/utils';
+
 
 const dateScalar = new GraphQLScalarType({
   name: 'Date',
@@ -27,13 +29,42 @@ const dateScalar = new GraphQLScalarType({
 });
 
 // Validation function for checking "oddness"
-function oddValue(value) {
+const oddValue = (value) => {
   console.log('value', value);
   if (typeof value === 'number' && Number.isInteger(value) && value % 2 !== 0) {
     return value;
   }
   throw new GraphQLError('Provided value is not an odd integer', {
     extensions: { code: 'BAD_USER_INPUT' },
+  });
+};
+
+// This function takes in a schema and adds upper-casing logic
+// to every resolver for an object field that has a directive with
+// the specified name (we're using `upper`)
+export const upperDirectiveTransformer = (schema, directiveName) => {
+  return mapSchema(schema, {
+    // Executes once for each object field in the schema
+    [MapperKind.OBJECT_FIELD]: (fieldConfig) => {
+      // Check whether this field has the specified directive
+      const upperDirective = getDirective(schema, fieldConfig, directiveName)?.[0];
+
+      if (upperDirective) {
+        // Get this field's original resolver
+        const { resolve = defaultFieldResolver } = fieldConfig;
+
+        // Replace the original resolver with a function that *first* calls
+        // the original resolver, then converts its result to upper case
+        fieldConfig.resolve = async function (source, args, context, info) {
+          const result = await resolve(source, args, context, info);
+          if (typeof result === 'string') {
+            return result.toUpperCase();
+          }
+          return result;
+        };
+        return fieldConfig;
+      }
+    },
   });
 }
 
@@ -54,6 +85,8 @@ export const typeDefs = `#graphql
     scalar Date  # highlight-line 
     scalar Odd
     scalar JSON
+
+    directive @upper on FIELD_DEFINITION
 
 
     interface MutationResponse {
@@ -77,6 +110,11 @@ export const typeDefs = `#graphql
     # Comments in GraphQL strings (such as this one) start with the hash (#) symbol.
   
     # This "Book" type defines the queryable fields for every book in our data source.
+
+    type ExampleType {
+      oldField: String @deprecated(reason: "Use newField.")
+      newField: String
+    }
 
     type User {
       id: ID!
@@ -123,6 +161,8 @@ export const typeDefs = `#graphql
       author: [Author]
       avatar(borderColor: AllowedColor): UpdateUserEmailMutationResponse # enum argument
       echoOdd(odd: Odd!): Odd!
+      hello: String @upper
+
     }
 
     type Mutation {
@@ -169,6 +209,9 @@ export const resolvers = {
     },
     echoOdd(_, { odd }) {
       return odd;
+    },
+    hello() {
+      return 'Hello World!';
     },
   },
 };

@@ -11,7 +11,10 @@ import bodyParser from 'body-parser';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import { expressMiddleware } from '@apollo/server/express4';
 // import { ApolloServerPluginUsageReporting } from '@apollo/server/plugin/usageReporting';
-import { resolvers, typeDefs } from "./schema/schema.js";
+import { resolvers, typeDefs, upperDirectiveTransformer } from "./schema/schema.js";
+import { makeExecutableSchema } from '@graphql-tools/schema';
+
+
 
 
 // const expressPlayground = require('graphql-playground-middleware-express')
@@ -34,9 +37,16 @@ const httpServer = http.createServer(app);
 
 // Same ApolloServer initialization as before, plus the drain plugin
 // for our httpServer.
-const server = new ApolloServer({
+
+let schema = makeExecutableSchema({
   typeDefs,
   resolvers,
+});
+
+schema = upperDirectiveTransformer(schema, 'upper');
+
+const server = new ApolloServer({
+  schema,
   plugins: [
     ApolloServerPluginDrainHttpServer({ httpServer }),
     // ApolloServerPluginUsageReporting({
