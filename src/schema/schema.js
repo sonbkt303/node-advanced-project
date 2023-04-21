@@ -1,4 +1,5 @@
 import { GraphQLScalarType, Kind, GraphQLError } from 'graphql';
+import GraphQLJSON from 'graphql-type-json';
 
 const dateScalar = new GraphQLScalarType({
   name: 'Date',
@@ -52,6 +53,8 @@ export const typeDefs = `#graphql
     scalar MyCustomScalar
     scalar Date  # highlight-line 
     scalar Odd
+    scalar JSON
+
 
     interface MutationResponse {
       code: String!
@@ -64,6 +67,11 @@ export const typeDefs = `#graphql
       success: Boolean!
       message: String
       user: User
+    }
+
+    # Example with scalar Json third party
+    type MyObject {
+      myField: JSON
     }
 
     # Comments in GraphQL strings (such as this one) start with the hash (#) symbol.
