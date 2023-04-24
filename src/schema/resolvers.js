@@ -135,10 +135,11 @@ export const resolvers = {
       // Return our hardcoded array of libraries
       return libraries;
     },
-    users: async (parent, args, contextValue, info) => {
-      const data = await contextValue.dataSources.pg.select('*').from("users");
+    users: async (parent, args, { dataSources }, info) => {
+      const data = await dataSources.pg.select('*').from("users");
+      const userMongo = await dataSources.mongo.model('User').find();
 
-      console.log('data', data);
+      console.log('userMongo', userMongo);
 
       return "mike";
     },

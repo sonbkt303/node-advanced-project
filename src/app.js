@@ -9,6 +9,7 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
 import { expressMiddleware } from "@apollo/server/express4";
+import mongoose from "mongoose";
 // import { ApolloServerPluginUsageReporting } from '@apollo/server/plugin/usageReporting';
 // import { typeDefs, upperDirectiveTransformer } from "./schema/index.js";
 // import { resolvers } from "./schema/resolvers.js";
@@ -16,20 +17,58 @@ import { expressMiddleware } from "@apollo/server/express4";
 // import { upperDirectiveTransformer } from "./schema/directive.js";
 import schema from "./schema/index.js";
 import MyDatabase from "./datasource/myDatabase.js";
+import mongodbConnection from "./datasource/mongodb.js";
+import config from "./config/index.js";
 
-const knexConfig = {
-  client: "pg",
-  connection: {
-    /* CONNECTION INFO */
-    host: "127.0.0.1",
-    port: 5432,
-    user: "pg-mike",
-    password: "1",
-    database: "dev",
-  },
-};
+const postgresqlConnection = new MyDatabase(config.dataSources.postgresql);
 
-const postgresqlConnection = new MyDatabase(knexConfig);
+// mongoose.connect("mongodb://127.0.0.1:27017/simple_db", {
+//   // autoIndex: false, // Don't build indexes
+//   // maxPoolSize: 10, // Maintain up to 10 socket connections
+//   // serverSelectionTimeoutMS: 5000, // Keep trying to send operations for 5 seconds
+//   // socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
+//   // family: 4, // Use IPv4, skip trying IPv
+// });
+
+// const UserSchema = new mongoose.Schema({
+//   name: {
+//     type: String,
+//     required: true,
+//   },
+//   age: {
+//     type: Number,
+//     default: 0,
+//   },
+// });
+
+// const User = mongoose.model("User", UserSchema, "users");
+
+// const user = new User({ name: "mike bui", age: 18 });
+
+// // user.save();
+// const mongodbConnection = mongoose.connection;
+
+// mongodbConnection.on("error", console.error.bind(console, "connection error: "));
+// mongodbConnection.once("open", async  function () {
+//   console.log("Connected successfully");
+// });
+
+// const main = async () => {
+//   // const connection = await mongodb;
+//   // const data = await User.aggregate([
+//   //   {
+//   //     $match: {},
+//   //   },
+//   // ]);
+//   let data = await mongoose.connection.model('User').find()
+//   console.log(data);
+
+//   // console.log(connection);
+//   // const data = await mongodb.collection('students').find();
+//   // console.log('data', data);
+// };
+
+// main();
 
 // const expressPlayground = require('graphql-playground-middleware-express')
 // .default
@@ -40,7 +79,6 @@ const PORT_GRAPHQL = process.env.PORT_GRAPHQL || 4000;
 const getScope = (authScope) => {
   return authScope;
 };
-
 
 // Required logic for integrating with Express
 const app = express();
@@ -78,7 +116,8 @@ app.use(
         token: req.headers.token,
         authScope: getScope(req.headers.authorization),
         dataSources: {
-          pg: postgresqlConnection?.db
+          pg: postgresqlConnection?.db,
+          mongo: mongodbConnection,
         },
       };
     },
