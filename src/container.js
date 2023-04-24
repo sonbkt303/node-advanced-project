@@ -1,5 +1,5 @@
 import awilix from "awilix";
-
+import { mongodb } from './datasource/index.js';
 const { createContainer, asClass, asValue, asFunction } = awilix;
 const container = createContainer();
 
@@ -19,6 +19,7 @@ container.register({
   printTime: asFunction(makePrintTime).singleton(),
   time: asFunction(getTime).transient(),
   sayHi: asFunction(sayHi).transient(),
+  mongodbConnection: asValue(mongodb),
 });
 
 // Resolving `time` 2 times will

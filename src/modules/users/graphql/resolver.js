@@ -17,6 +17,9 @@ const resolver = {
       console.log("userMongo", userMongo);
 
       container.resolve('sayHi');
+      const mongoUser = await container.resolve('mongodbConnection').model('User').find();
+
+      console.log("111 userMongo", mongoUser);
 
       return "mike";
     },
