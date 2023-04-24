@@ -1,6 +1,6 @@
 
 import { SQLDataSource } from "datasource-sql";
-import config from "../config/index.js";
+import { dbConfig } from "../config/index.js";
 
 const MINUTE = 60;
 
@@ -14,7 +14,7 @@ class MyDatabase extends SQLDataSource {
   // }
 };
 
-const postgresqlConnection = new MyDatabase(config.dataSources.postgresql);
+const postgresqlConnection = new MyDatabase(dbConfig.postgresql);
 
 export default postgresqlConnection;
 

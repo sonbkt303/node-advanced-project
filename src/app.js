@@ -50,7 +50,7 @@ app.use(
         authScope: req.headers.authorization,
         dataSources: {
           pg: postgresql?.db,
-          mongo: mongodb,
+          mongo: mongodb?.connection,
         },
         container: container,
       };

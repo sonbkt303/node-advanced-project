@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
-import config from "../config/index.js";
+import { dbConfig } from "../config/index.js";
 import UserSchema from "../modules/users/models.js";
 
-mongoose.connect(config.dataSources.mongodb.url, {
+mongoose.connect(dbConfig.mongodb.url, {
   autoIndex: false, // Don't build indexes
   maxPoolSize: 10, // Maintain up to 10 socket connections
   serverSelectionTimeoutMS: 5000, // Keep trying to send operations for 5 seconds
@@ -22,5 +22,5 @@ mongodbConnection.once("open", async  function () {
   console.log("Connected successfully");
 });
 
-export default mongodbConnection;
+export default mongoose;
 

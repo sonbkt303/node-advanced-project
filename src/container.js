@@ -1,11 +1,13 @@
 import awilix from "awilix";
-import { mongodb } from './datasource/index.js';
+import { mongodb } from "./datasource/index.js";
+import UserSchema from "./modules/users/models.js";
+import { modelConfig } from "./config/index.js";
 const { createContainer, asClass, asValue, asFunction } = awilix;
 const container = createContainer();
 
 const sayHi = () => {
-  console.log('Hi');
-}
+  console.log("Hi");
+};
 
 const makePrintTime =
   ({ time }) =>
@@ -19,7 +21,14 @@ container.register({
   printTime: asFunction(makePrintTime).singleton(),
   time: asFunction(getTime).transient(),
   sayHi: asFunction(sayHi).transient(),
-  mongodbConnection: asValue(mongodb),
+  mongodbConnection: asValue(mongodb?.connection),
+  userProvider: asValue(
+    mongodb?.model(
+      modelConfig.modelName.USER.NAME,
+      UserSchema,
+      modelConfig.modelName.USER.COLLECTION
+    )
+  ),
 });
 
 // Resolving `time` 2 times will
@@ -30,6 +39,5 @@ container.register({
 // container.resolve('printTime')()
 // container.resolve('printTime')()
 // container.resolve('sayHi');
-
 
 export default container;
