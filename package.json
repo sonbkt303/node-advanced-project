@@ -17,6 +17,7 @@
     "apollo-server-express": "^3.12.0",
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
+    "datasource-sql": "^2.0.1",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "express-graphql": "^0.12.0",
@@ -24,7 +25,9 @@
     "graphql-playground-middleware-express": "^1.7.23",
     "graphql-tools": "^8.3.20",
     "graphql-type-json": "^0.3.2",
-    "nodemon": "^2.0.22"
+    "knex": "^2.4.2",
+    "nodemon": "^2.0.22",
+    "pg": "^8.10.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.21.0",

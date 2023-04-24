@@ -135,7 +135,17 @@ export const resolvers = {
       // Return our hardcoded array of libraries
       return libraries;
     },
-    adminExample: (parent, args, contextValue, info) => {
+    users: async (parent, args, contextValue, info) => {
+      const data = await contextValue.dataSources.pg.select('*').from("users");
+
+      console.log('data', data);
+
+      return "mike";
+    },
+    adminExample: async (parent, args, contextValue, info) => {
+      // console.log("contextValue", contextValue.dataSources.pg);
+      const data = await contextValue.dataSources.pg.select('*').from("users");
+
       if (contextValue.authScope !== ADMIN) {
         throw new GraphQLError('not admin!', {
           extensions: { 

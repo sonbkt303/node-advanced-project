@@ -95,6 +95,7 @@ export const typeDefs = `#graphql
       hello: String @upper
       libraries: [Library]
       adminExample: String
+      users: String
     }
 
     type Mutation {
