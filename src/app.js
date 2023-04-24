@@ -1,8 +1,6 @@
 import dotenv from "dotenv";
 import express from "express";
-// import { graphqlHTTP } from "express-graphql";
-// import { buildSchema } from "graphql";
-dotenv.config();
+import container from "./container.js";
 import { ApolloServer } from "@apollo/server";
 import http from "http";
 import cors from "cors";
@@ -16,12 +14,9 @@ import config from "./config/index.js";
 
 const postgresqlConnection = new MyDatabase(config.dataSources.postgresql);
 
-const PORT = process.env.PORT || 3000;
 const PORT_GRAPHQL = process.env.PORT_GRAPHQL || 4000;
 
-const getScope = (authScope) => {
-  return authScope;
-};
+container.resolve('sayHi');
 
 // Required logic for integrating with Express
 const app = express();
@@ -57,11 +52,12 @@ app.use(
     context: async ({ req, res }) => {
       return {
         token: req.headers.token,
-        authScope: getScope(req.headers.authorization),
+        authScope: req.headers.authorization,
         dataSources: {
           pg: postgresqlConnection?.db,
           mongo: mongodbConnection,
         },
+        container: container,
       };
     },
   })
