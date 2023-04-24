@@ -94,6 +94,7 @@ export const typeDefs = `#graphql
       echoOdd(odd: Odd!): Odd!
       hello: String @upper
       libraries: [Library]
+      adminExample: String
     }
 
     type Mutation {

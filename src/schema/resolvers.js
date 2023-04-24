@@ -93,8 +93,11 @@ export const resolvers = {
   }),
   Date: dateScalar,
   Library: {
-    books(parent) {
-      console.log("parent", parent);
+    books(parent, args, contextValue, value) {
+      // console.log("parent", parent);
+      // console.log("args", args);
+      // console.log("contextValue", contextValue);
+      // console.log("value", value);
       // Filter the hardcoded array of books to only include
       // books that are located at the correct branch
       return books.filter((book) => book.branch === parent.branch);
@@ -131,5 +134,13 @@ export const resolvers = {
       // Return our hardcoded array of libraries
       return libraries;
     },
+    adminExample: (parent, args, contextValue, info) => {
+      if (contextValue.authScope !== ADMIN) {
+        throw new GraphQLError('not admin!', {
+          extensions: { code: 'UNAUTHENTICATED' },
+        });
+      }
+    },
+
   },
 };

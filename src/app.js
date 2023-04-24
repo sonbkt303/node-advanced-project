@@ -22,6 +22,14 @@ import schema from "./schema/index.js";
 const PORT = process.env.PORT || 3000;
 const PORT_GRAPHQL = process.env.PORT_GRAPHQL || 4000;
 
+const getScope = (authScope) => {
+  return authScope;
+};
+
+const connect = () => {
+  return 'connect';
+};
+
 // Required logic for integrating with Express
 const app = express();
 // Our httpServer handles incoming requests to our Express app.
@@ -52,7 +60,11 @@ app.use(
   // expressMiddleware accepts the same arguments:
   // an Apollo Server instance and optional configuration options
   expressMiddleware(server, {
-    context: async ({ req }) => ({ token: req.headers.token }),
+    context: async ({ req, res }) => ({ 
+      token: req.headers.token,
+      authScope: getScope(req.headers.authorization),
+      db: connect(),
+    }),
   }),
 );
 
