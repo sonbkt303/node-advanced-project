@@ -35,15 +35,27 @@ export const typeDefs = `#graphql
       newField: String
     }
 
+    # A library has a branch and books
+    type Library {
+      branch: String!
+      books: [Book!]
+    }
+  
+    # A book has a title and author
+    type Book {
+      title: String!
+      author: Author!
+    }
+  
+    # An author has a name
+    type Author {
+      name: String!
+    }
+
     type User {
       id: ID!
       name: String!
       email: String!
-    }
-
-    type Book {
-      title: String
-      author: String
     }
 
     type Author {
@@ -81,7 +93,7 @@ export const typeDefs = `#graphql
       avatar(borderColor: AllowedColor): UpdateUserEmailMutationResponse # enum argument
       echoOdd(odd: Odd!): Odd!
       hello: String @upper
-
+      libraries: [Library]
     }
 
     type Mutation {
