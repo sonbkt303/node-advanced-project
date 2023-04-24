@@ -1,12 +1,13 @@
-export const typeDefs = `#graphql
+import { mergeTypeDefs } from '@graphql-tools/merge';
+import userTypeDefs from '../modules/users/graphql/typeDefs.js';
 
+export const baseTypeDefs = `#graphql
     scalar MyCustomScalar
     scalar Date  # highlight-line 
     scalar Odd
     scalar JSON
 
     directive @upper on FIELD_DEFINITION
-
 
     interface MutationResponse {
       code: String!
@@ -52,12 +53,6 @@ export const typeDefs = `#graphql
       name: String!
     }
 
-    type User {
-      id: ID!
-      name: String!
-      email: String!
-    }
-
     type Author {
       name: String
     }
@@ -95,7 +90,6 @@ export const typeDefs = `#graphql
       hello: String @upper
       libraries: [Library]
       adminExample: String
-      users: String
     }
 
     type Mutation {
@@ -103,3 +97,8 @@ export const typeDefs = `#graphql
       createBlogPost(content: BlogPostContent!): Book
     }
   `;
+
+
+const typeDefs = [baseTypeDefs, userTypeDefs];
+
+export default mergeTypeDefs(typeDefs);

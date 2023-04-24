@@ -1,17 +1,9 @@
 import { GraphQLScalarType, Kind, GraphQLError } from "graphql";
 import GraphQLJSON from "graphql-type-json";
+import userResolver from "../modules/users/graphql/resolver.js";
+import { mergeResolvers } from "@graphql-tools/merge";
 
-const ADMIN = 'admin';
-const users = [
-  {
-    id: "1",
-    name: "Elizabeth Bennet",
-  },
-  {
-    id: "2",
-    name: "Fitzwilliam Darcy",
-  },
-];
+const ADMIN = "admin";
 
 const libraries = [
   {
@@ -72,7 +64,7 @@ const oddValue = (value) => {
   });
 };
 
-export const resolvers = {
+export const baseResolver = {
   AllowedColor: {
     RED: "#f00",
     GREEN: "#0f0",
@@ -127,7 +119,7 @@ export const resolvers = {
     },
     echoOdd(_, { odd }) {
       return odd;
-    },  
+    },
     hello() {
       return "Hello World!";
     },
@@ -135,22 +127,14 @@ export const resolvers = {
       // Return our hardcoded array of libraries
       return libraries;
     },
-    users: async (parent, args, { dataSources }, info) => {
-      const data = await dataSources.pg.select('*').from("users");
-      const userMongo = await dataSources.mongo.model('User').find();
-
-      console.log('userMongo', userMongo);
-
-      return "mike";
-    },
     adminExample: async (parent, args, contextValue, info) => {
       // console.log("contextValue", contextValue.dataSources.pg);
-      const data = await contextValue.dataSources.pg.select('*').from("users");
+      const data = await contextValue.dataSources.pg.select("*").from("users");
 
       if (contextValue.authScope !== ADMIN) {
-        throw new GraphQLError('not admin!', {
-          extensions: { 
-            code: 'UNAUTHENTICATED',
+        throw new GraphQLError("not admin!", {
+          extensions: {
+            code: "UNAUTHENTICATED",
             http: { status: 401 },
           },
         });
@@ -158,3 +142,7 @@ export const resolvers = {
     },
   },
 };
+
+const resolvers = [baseResolver, userResolver];
+
+export default mergeResolvers(resolvers);
