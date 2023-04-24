@@ -10,7 +10,7 @@ import bodyParser from "body-parser";
 import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
 import { expressMiddleware } from "@apollo/server/express4";
 import schema from "./schema/index.js";
-import MyDatabase from "./datasource/myDatabase.js";
+import MyDatabase from "./datasource/postgresql.js";
 import mongodbConnection from "./datasource/mongodb.js";
 import config from "./config/index.js";
 

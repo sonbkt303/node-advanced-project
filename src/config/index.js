@@ -11,5 +11,8 @@ export default {
         database: "dev",
       },
     },
+    mongodb: {
+      url: "mongodb://127.0.0.1:27017/simple_db"
+    }
   },
 };
