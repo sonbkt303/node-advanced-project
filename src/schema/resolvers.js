@@ -131,6 +131,8 @@ export const baseResolver = {
       // console.log("contextValue", contextValue.dataSources.pg);
       const data = await contextValue.dataSources.pg.select("*").from("users");
 
+      console.log("data", data);
+
       if (contextValue.authScope !== ADMIN) {
         throw new GraphQLError("not admin!", {
           extensions: {

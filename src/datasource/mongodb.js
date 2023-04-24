@@ -22,5 +22,6 @@ mongodbConnection.once("open", async  function () {
   console.log("Connected successfully");
 });
 
-export default mongodbConnection
+export const a = 1;
+export default mongoose;
 

@@ -8,12 +8,7 @@ import bodyParser from "body-parser";
 import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
 import { expressMiddleware } from "@apollo/server/express4";
 import schema from "./schema/index.js";
-import MyDatabase from "./datasource/postgresql.js";
-import mongodbConnection from "./datasource/mongodb.js";
-import config from "./config/index.js";
-
-const postgresqlConnection = new MyDatabase(config.dataSources.postgresql);
-
+import { mongodb, postgresql } from "./datasource/index.js";
 const PORT_GRAPHQL = process.env.PORT_GRAPHQL || 4000;
 
 container.resolve('sayHi');
@@ -54,8 +49,8 @@ app.use(
         token: req.headers.token,
         authScope: req.headers.authorization,
         dataSources: {
-          pg: postgresqlConnection?.db,
-          mongo: mongodbConnection,
+          pg: postgresql?.db,
+          mongo: mongodb?.connection,
         },
         container: container,
       };
