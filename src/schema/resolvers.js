@@ -1,6 +1,7 @@
 import { GraphQLScalarType, Kind, GraphQLError } from "graphql";
 import GraphQLJSON from "graphql-type-json";
 
+const ADMIN = 'admin';
 const users = [
   {
     id: "1",
@@ -137,10 +138,12 @@ export const resolvers = {
     adminExample: (parent, args, contextValue, info) => {
       if (contextValue.authScope !== ADMIN) {
         throw new GraphQLError('not admin!', {
-          extensions: { code: 'UNAUTHENTICATED' },
+          extensions: { 
+            code: 'UNAUTHENTICATED',
+            http: { status: 401 },
+          },
         });
       }
     },
-
   },
 };
