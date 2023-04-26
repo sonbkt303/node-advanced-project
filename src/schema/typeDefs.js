@@ -8,6 +8,7 @@ export const baseTypeDefs = `#graphql
     scalar JSON
 
     directive @upper on FIELD_DEFINITION
+    directive @isAuthenticated on FIELD_DEFINITION
 
     interface MutationResponse {
       code: String!

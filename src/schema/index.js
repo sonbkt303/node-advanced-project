@@ -3,26 +3,51 @@
 
 import resolvers from "./resolvers.js";
 import typeDefs from "./typeDefs.js";
-import { upperDirectiveTransformer } from "./directive.js";
-import { makeExecutableSchema } from "@graphql-tools/schema";
+// import { upperDirectiveTransformer } from "./directive.js";
+import { upperDirectiveTransformer } from "@directives";
 
-let schema = makeExecutableSchema({
-  typeDefs,
-  resolvers,
-  plugins: [
+console.log("directiveResolvers", upperDirectiveTransformer)
+
+import { makeExecutableSchema } from "@graphql-tools/schema";
+import { applyMiddleware } from "graphql-middleware";
+const logInput = async (resolve, root, args, context, info) => {
+  console.log(`1. logInput: ${JSON.stringify(args)}`)
+  const result = await resolve(root, args, context, info)
+  console.log(`5. logInput`)
+  return result
+};
+
+const logResult = async (resolve, root, args, context, info) => {
+  console.log(`2. logResult`)
+  const result = await resolve(root, args, context, info)
+  console.log(`4. logResult: ${JSON.stringify(result)}`)
+  return result
+};
+
+
+let schema = applyMiddleware(
+  makeExecutableSchema(
     {
-      async serverWillStart() {
-        console.log('Server starting up!');
-      },
+      typeDefs,
+      resolvers,
+      plugins: [
+        {
+          async serverWillStart() {
+            console.log("Server starting up!");
+          },
+        },
+        {
+          async requestDidStart({ contextValue }) {
+            // token is properly inferred as a string
+            console.log("111111111", contextValue.token);
+          },
+        },
+      ],
     },
-    {
-      async requestDidStart({ contextValue }) {
-        // token is properly inferred as a string
-        console.log('111111111', contextValue.token);
-      },
-    },
-  ],
-});
+  ),
+  logInput,
+  logResult,
+);
 
 schema = upperDirectiveTransformer(schema, "upper");
 

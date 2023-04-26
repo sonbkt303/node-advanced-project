@@ -121,6 +121,7 @@ export const baseResolver = {
       return odd;
     },
     hello() {
+      console.log('1111111111');
       return "Hello World!";
     },
     libraries() {

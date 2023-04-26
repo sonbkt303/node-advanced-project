@@ -48,10 +48,10 @@ export const bootstrap = async () => {
         return {
           token: req.headers.token,
           authScope: req.headers.authorization,
-          dataSources: {
-            pg: postgresql?.db,
-            mongo: mongodb?.connection,
-          },
+        //   dataSources: {
+        //     pg: postgresql?.db,
+        //     mongo: mongodb?.connection,
+        //   },
           container: container,
         };
       },

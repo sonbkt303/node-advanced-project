@@ -17,7 +17,8 @@
         "alias": {
           "@flamingo": "./src",
           "@datasource": "./src/datasource",
-          "@config": "./src/config"
+          "@config": "./src/config",
+          "@directives": "./src/schema/directive"
         }
       }
     ]

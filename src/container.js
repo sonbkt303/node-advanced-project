@@ -1,7 +1,7 @@
 import * as awilix from "awilix";
 import { mongodb } from "@datasource";
 import UserSchema from "./modules/users/models.js";
-import { modelConfig } from "./config/index.js";
+import { modelConfig } from "@config";
 
 const { createContainer, asClass, asValue, asFunction } = awilix;
 
