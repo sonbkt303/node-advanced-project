@@ -1,8 +1,10 @@
-import awilix from "awilix";
-import { mongodb } from "./datasource/index.js";
+import * as awilix from "awilix";
+import { mongodb } from "@datasource";
 import UserSchema from "./modules/users/models.js";
 import { modelConfig } from "./config/index.js";
+
 const { createContainer, asClass, asValue, asFunction } = awilix;
+
 const container = createContainer();
 
 const sayHi = () => {
