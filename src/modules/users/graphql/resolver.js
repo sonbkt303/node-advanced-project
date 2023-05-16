@@ -20,12 +20,14 @@ const resolver = {
       //   const mongoUser = await container.resolve('mongodbConnection').model('User').find();
 
       //   console.log("111 userMongo", mongoUser);
-
       const users = await container.resolve("userProvider").find();
-
-      console.log("111  users", users);
-
-      return "mike";
+      return {
+        id: "1",
+        name: "mike",
+        email: "mike@gmail.com",
+        banned: true,
+        canPost: false,
+      }
     },
   },
   Mutation: {},

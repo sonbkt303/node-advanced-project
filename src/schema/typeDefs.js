@@ -9,6 +9,7 @@ export const baseTypeDefs = `#graphql
 
     directive @upper on FIELD_DEFINITION
     directive @isAuthenticated on FIELD_DEFINITION
+    directive @auth(requires: Role = ADMIN) on OBJECT | FIELD_DEFINITION
 
     interface MutationResponse {
       code: String!

@@ -4,26 +4,28 @@
 import resolvers from "./resolvers.js";
 import typeDefs from "./typeDefs.js";
 // import { upperDirectiveTransformer } from "./directive.js";
-import { upperDirectiveTransformer } from "@directives";
-
-console.log("directiveResolvers", upperDirectiveTransformer)
+import { upperDirectiveTransformer, authDirectiveTransformer } from "@directives";
 
 import { makeExecutableSchema } from "@graphql-tools/schema";
 import { applyMiddleware } from "graphql-middleware";
 const logInput = async (resolve, root, args, context, info) => {
-  console.log(`1. logInput: ${JSON.stringify(args)}`)
+  // console.log(`1. logInput: ${JSON.stringify(args)}`)
   const result = await resolve(root, args, context, info)
-  console.log(`5. logInput`)
+  // console.log(`5. logInput`)
   return result
 };
 
 const logResult = async (resolve, root, args, context, info) => {
-  console.log(`2. logResult`)
+  // console.log(`2. logResult`)
   const result = await resolve(root, args, context, info)
-  console.log(`4. logResult: ${JSON.stringify(result)}`)
+  // console.log(`4. logResult: ${JSON.stringify(result)}`)
   return result
 };
 
+// let schema = makeExecutableSchema({
+//   typeDefs,
+//   resolvers,
+// });
 
 let schema = applyMiddleware(
   makeExecutableSchema(
@@ -50,5 +52,6 @@ let schema = applyMiddleware(
 );
 
 schema = upperDirectiveTransformer(schema, "upper");
+schema = authDirectiveTransformer(schema, "auth");
 
 export default schema;

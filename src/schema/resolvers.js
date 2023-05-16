@@ -55,7 +55,6 @@ const dateScalar = new GraphQLScalarType({
 
 // Validation function for checking "oddness"
 const oddValue = (value) => {
-  console.log("value", value);
   if (typeof value === "number" && Number.isInteger(value) && value % 2 !== 0) {
     return value;
   }
@@ -109,7 +108,7 @@ export const baseResolver = {
   Query: {
     books: () => books,
     avatar: (parent, args) => {
-      console.log("args", args);
+      // console.log("args", args);
       return {
         code: 2,
         success: true,
@@ -121,7 +120,6 @@ export const baseResolver = {
       return odd;
     },
     hello() {
-      console.log('1111111111');
       return "Hello World!";
     },
     libraries() {
@@ -131,8 +129,6 @@ export const baseResolver = {
     adminExample: async (parent, args, contextValue, info) => {
       // console.log("contextValue", contextValue.dataSources.pg);
       const data = await contextValue.dataSources.pg.select("*").from("users");
-
-      console.log("data", data);
 
       if (contextValue.authScope !== ADMIN) {
         throw new GraphQLError("not admin!", {

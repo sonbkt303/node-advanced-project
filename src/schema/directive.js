@@ -14,16 +14,22 @@ export const upperDirectiveTransformer = (schema, directiveName) => {
         directiveName
       )?.[0];
 
+      // console.log("upperDirectiveTransformer.upperDirective", upperDirective, directiveName)
 
       if (upperDirective) {
         // Get this field's original resolver
         const { resolve = defaultFieldResolver } = fieldConfig;
 
+        // console.log("upperDirectiveTransformer.fieldConfig", fieldConfig)
+
         // Replace the original resolver with a function that *first* calls
         // the original resolver, then converts its result to upper case
         fieldConfig.resolve = async function (source, args, context, info) {
           const result = await resolve(source, args, context, info);
-          console.log("upperDirective", upperDirective, result)
+
+          // console.log("result", result)
+
+          // console.log("upperDirective", upperDirective, result, directiveName)
 
           if (typeof result === "string") {
             return result.toUpperCase();
@@ -31,6 +37,55 @@ export const upperDirectiveTransformer = (schema, directiveName) => {
           return result;
         };
         return fieldConfig;
+      }
+    },
+  });
+};
+
+const getUserFn = (token = "") => {
+  return { hasRole: (role) => Boolean(role) };
+};
+
+export const authDirectiveTransformer = (schema, directiveName) => {
+  const typeDirectiveArgumentMaps = {};
+
+  return mapSchema(schema, {
+    // [MapperKind.FIELD]: (type) => {
+    //   const authDirective = getDirective(schema, type, directiveName)?.[0];
+
+    //   if (authDirective) {
+    //     typeDirectiveArgumentMaps[type.name] = authDirective;
+    //   }
+    //   return undefined;
+    // },
+    [MapperKind.OBJECT_FIELD]: (fieldConfig, _fieldName, typeName) => {
+      const authDirective =
+        getDirective(schema, fieldConfig, directiveName)?.[0] ??
+        typeDirectiveArgumentMaps[typeName];
+
+      if (authDirective) {
+        const { requires } = authDirective;
+        console.log("require", authDirective)
+        if (requires) {
+          
+          // console.log("defaultFieldResolver", fieldConfig)
+          const { resolve = defaultFieldResolver } = fieldConfig;
+
+          fieldConfig.resolve = async function (source, args, context, info) {
+
+            const result = await resolve(source, args, context, info);
+
+            const userRoles = getUserFn(context.token);
+
+            if (!userRoles.hasRole(requires)) {
+              throw new Error("not authorized");
+            }
+
+            return result;
+            // return resolve(source, args, context, info);
+          };
+          return fieldConfig;
+        }
       }
     },
   });
