@@ -12,6 +12,7 @@ import { mongodb, postgresql } from "@datasource";
 const PORT_GRAPHQL = process.env.PORT_GRAPHQL || 4000;
 import https from "https";
 import fs from "fs";
+import multer from "multer";
 // import a from "./config/ssl/production/sever.key";
 
 // const data = fs.readFileSync("./config/ssl/production/sever.txt", { encoding: "utf8", flag: "r" });
@@ -22,12 +23,50 @@ const configurations = {
   development: { ssl: false, port: 4000, hostname: "localhost" },
 };
 
+/**
+ * Disk storage multer
+ */
+// const storage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     cb(null, destinationPath);
+//   },
+//   filename: function (req, file, cb) {
+//     const { originalname } = file;
+//     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+//     cb(null, file.fieldname + "-" + uniqueSuffix + "-" + originalname);
+//   },
+// });
+
+const storage = multer.memoryStorage()
+
+
+// Multer Filter
+const multerFilter = (req, file, cb) => {
+  if (file.mimetype.split("/")[1]) {
+    cb(null, true);
+  } else {
+    cb(new Error("Not a PDF File!!"), false);
+  }
+};
+
+const upload = multer({
+  storage: storage,
+  fileFilter: multerFilter,
+});
+
 const environment = process.env.NODE_ENV || "production";
 const config = configurations[environment];
 
 export const bootstrap = async () => {
   // Required logic for integrating with Express
   const app = express();
+  app.options('*', cors()) // include before other routes
+  app.use(cors({
+    origin: "*",
+    credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization", "X-Apollo-Tracing"],
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS'
+  }));
 
   let httpServer;
 
@@ -65,8 +104,7 @@ export const bootstrap = async () => {
   // Set up our Express middleware to handle CORS, body parsing,
   // and our expressMiddleware function.
   app.use(
-    "/",
-    cors(),
+    "/graphql",
     bodyParser.json({ limit: "50mb" }),
     // expressMiddleware accepts the same arguments:
     // an Apollo Server instance and optional configuration options
@@ -83,6 +121,15 @@ export const bootstrap = async () => {
         };
       },
     })
+  );
+
+  app.use(
+    "/api/upload",
+    upload.single("file"),
+    (req, res) => {
+      console.log("file", req.file)
+      res.send('success')
+    }
   );
 
   // Modified server startup
