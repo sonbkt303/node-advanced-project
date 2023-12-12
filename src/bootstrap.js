@@ -13,9 +13,26 @@ const PORT_GRAPHQL = process.env.PORT_GRAPHQL || 4000;
 import https from "https";
 import fs from "fs";
 import multer from "multer";
-// import a from "./config/ssl/production/sever.key";
+import path from "path";
+const path1 = path.join(__dirname, "a.txt");
+console.log(path1);
 
-// const data = fs.readFileSync("./config/ssl/production/sever.txt", { encoding: "utf8", flag: "r" });
+// console.log(__dirname)
+// const data = fs.readFileSync(path1, { encoding: 'utf8', flag: 'r' });
+fs.readFile(path1, 'utf8', (err, data) => {
+  if (err) {
+    console.error(err);
+    return;
+  }
+  console.log(data.toString());
+});
+// var data = fs.readFileSync(path1, 'utf8');
+
+// // Printing the response
+// console.log(data.toString());   
+
+// console.log("data", data)
+
 
 const configurations = {
   // Note: You may need sudo to run on port 443
